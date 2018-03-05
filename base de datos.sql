@@ -1,3 +1,4 @@
+DROP SCHEMA `proyecto`;
 CREATE SCHEMA IF NOT EXISTS `proyecto` DEFAULT CHARACTER SET utf8 ;
 USE `proyecto` ;
 
