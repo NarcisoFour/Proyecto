@@ -1,32 +1,48 @@
 CREATE SCHEMA IF NOT EXISTS `proyecto` DEFAULT CHARACTER SET utf8 ;
 USE `proyecto` ;
 
-Drop Table if EXISTS `Alumno`;
-Drop Table if EXISTS `Maestro`;
-Drop Table if EXISTS `Vehiculo`;
-Drop Table if EXISTS `Asignacion`;
-Drop Table if EXISTS `Curso`;
-Drop Table if EXISTS `Matricula`;
+DROP TABLE IF EXISTS `Persona`;
+DROP TABLE IF EXISTS `Alumno`;
+DROP TABLE IF EXISTS `Maestro`;
+DROP TABLE IF EXISTS `Vehiculo`;
+DROP TABLE IF EXISTS `Asignacion`;
+DROP TABLE IF EXISTS `Curso`;
+DROP TABLE IF EXISTS `Matricula`;
+DROP TABLE IF EXISTS `Usuario`;
+DROP TABLE IF EXISTS `Rol`;
+DROP TABLE IF EXISTS `Acceso`;
+DROP TABLE IF EXISTS `Permiso`;
 
-CREATE TABLE IF NOT EXISTS `Alumno` (
+CREATE TABLE IF NOT EXISTS `Persona` (
   `Id` INT AUTO_INCREMENT PRIMARY KEY,
   `NCedula` VARCHAR(20) NOT NULL,
   `Nombre` VARCHAR(25) NOT NULL,
   `Apellido` VARCHAR(25) NOT NULL,
   `Telefono` VARCHAR(10) NOT NULL,
   `Direccion` VARCHAR(100) NOT NULL
+)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE TABLE IF NOT EXISTS `Alumno` (
+  `Id` INT PRIMARY KEY,
+  CONSTRAINT `alumno_personafk`
+    FOREIGN KEY (`Id`)
+    REFERENCES `Persona` (`Id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
   )
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
 
 CREATE TABLE IF NOT EXISTS `Maestro` (
-  `Id` INT AUTO_INCREMENT PRIMARY KEY,
+  `Id` INT PRIMARY KEY,
   `Licencia` VARCHAR(25) NOT NULL,
-  `NCedula` VARCHAR(20) NOT NULL,
-  `Nombre` VARCHAR(25) NOT NULL,
-  `Apellido` VARCHAR(25) NOT NULL,
-  `Telefono` VARCHAR(10) NOT NULL,
-  `Direccion` VARCHAR(100) NOT NULL
+  CONSTRAINT `maestro_personafk`
+    FOREIGN KEY (`Id`)
+    REFERENCES `Persona` (`Id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
   )
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
@@ -83,6 +99,57 @@ CREATE TABLE IF NOT EXISTS `Matricula` (
   CONSTRAINT `matricula_cursofk`
     FOREIGN KEY (`CursoID`)
     REFERENCES `Curso` (`Id`)
+)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+/*  Login  */
+
+CREATE Table if NOT EXISTS `Rol` (
+  `Id` INT AUTO_INCREMENT PRIMARY KEY,
+  `Nombre` VARCHAR(250) NOT NULL,
+  `Descripcion` VARCHAR(250)
+)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE Table if NOT EXISTS `Permiso` (
+  `Id` INT AUTO_INCREMENT PRIMARY KEY,
+  `Modulo` VARCHAR(250) NOT NULL,
+  `Nombre` VARCHAR(250) NOT NULL,
+  `Descripcion` VARCHAR(250)
+)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE Table if NOT EXISTS `Acceso` (
+  `Id` INT AUTO_INCREMENT PRIMARY KEY,
+  `Tipo` VARCHAR(45) NOT NULL,
+  `RolID` INT NOT NULL,
+  `PermisoID` INT NOT NULL,
+  CONSTRAINT `acceso_rolfk`
+    FOREIGN KEY (`RolID`)
+    REFERENCES `Rol` (`Id`),
+  CONSTRAINT `acceso_permisofk`
+    FOREIGN KEY (`PermisoID`)
+    REFERENCES `Permiso` (`Id`)
+)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+CREATE Table if NOT EXISTS `Usuario` (
+  `Id` INT AUTO_INCREMENT PRIMARY KEY,
+  `login` VARCHAR(45) NOT NULL,
+  `password` VARCHAR(45) NOT NULL,
+  `RolID` INT NOT NULL,
+  CONSTRAINT `usuario_personafk`
+    FOREIGN KEY (`Id`)
+    REFERENCES `Persona` (`Id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `usuario_rolfk`
+    FOREIGN KEY (`RolID`)
+    REFERENCES `Rol` (`Id`)
 )
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
