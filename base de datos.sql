@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS `Persona` (
   `Telefono` VARCHAR(10) NOT NULL,
   `Direccion` VARCHAR(100) NOT NULL,
   `Tipo` VARCHAR(150),
-  `Licencia` VARCHAR(25) NOT NULL
+  `Licencia` VARCHAR(25)
 )
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
