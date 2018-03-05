@@ -2,15 +2,13 @@ CREATE SCHEMA IF NOT EXISTS `proyecto` DEFAULT CHARACTER SET utf8 ;
 USE `proyecto` ;
 
 DROP TABLE IF EXISTS `Persona`;
-DROP TABLE IF EXISTS `Alumno`;
-DROP TABLE IF EXISTS `Maestro`;
 DROP TABLE IF EXISTS `Vehiculo`;
 DROP TABLE IF EXISTS `Asignacion`;
 DROP TABLE IF EXISTS `Curso`;
 DROP TABLE IF EXISTS `Matricula`;
 DROP TABLE IF EXISTS `Usuario`;
 DROP TABLE IF EXISTS `Rol`;
-DROP TABLE IF EXISTS `Acceso`;
+DROP TABLE IF EXISTS `Modulo`;
 DROP TABLE IF EXISTS `Permiso`;
 
 CREATE TABLE IF NOT EXISTS `Persona` (
@@ -19,31 +17,10 @@ CREATE TABLE IF NOT EXISTS `Persona` (
   `Nombre` VARCHAR(25) NOT NULL,
   `Apellido` VARCHAR(25) NOT NULL,
   `Telefono` VARCHAR(10) NOT NULL,
-  `Direccion` VARCHAR(100) NOT NULL
+  `Direccion` VARCHAR(100) NOT NULL,
+  `Tipo` VARCHAR(150),
+  `Licencia` VARCHAR(25) NOT NULL
 )
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8;
-
-CREATE TABLE IF NOT EXISTS `Alumno` (
-  `Id` INT PRIMARY KEY,
-  CONSTRAINT `alumno_personafk`
-    FOREIGN KEY (`Id`)
-    REFERENCES `Persona` (`Id`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE
-  )
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8;
-
-CREATE TABLE IF NOT EXISTS `Maestro` (
-  `Id` INT PRIMARY KEY,
-  `Licencia` VARCHAR(25) NOT NULL,
-  CONSTRAINT `maestro_personafk`
-    FOREIGN KEY (`Id`)
-    REFERENCES `Persona` (`Id`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE
-  )
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
 
@@ -60,11 +37,11 @@ DEFAULT CHARACTER SET = utf8;
 
 CREATE TABLE IF NOT EXISTS `Asignacion` (
   `Id` INT AUTO_INCREMENT PRIMARY KEY,
-  `MaestroID` INT NOT NULL,
+  `PersonaID` INT NOT NULL,
   `VehiculoID` INT NOT NULL,
-  CONSTRAINT `asignacion_maestrofk`
-    FOREIGN KEY (`MaestroID`)
-    REFERENCES `Maestro` (`Id`),
+  CONSTRAINT `asignacion_personafk`
+    FOREIGN KEY (`PersonaID`)
+    REFERENCES `Persona` (`Id`),
   CONSTRAINT `asignacion_vehiculofk`
     FOREIGN KEY (`VehiculoID`)
     REFERENCES `Vehiculo` (`Id`)
@@ -85,17 +62,13 @@ DEFAULT CHARACTER SET = utf8;
 
 CREATE TABLE IF NOT EXISTS `Matricula` (
   `Id` INT AUTO_INCREMENT PRIMARY KEY,
-  `AlumnoID` INT NOT NULL,
-  `MaestroID` INT NOT NULL,
+  `PersonaID` INT NOT NULL,
   `CursoID` INT NOT NULL,
   `Nota` INT,
   `Horario` VARCHAR(60),
-  CONSTRAINT `matricula_alumnofk`
-    FOREIGN KEY (`AlumnoID`)
-    REFERENCES `Alumno` (`Id`),
-  CONSTRAINT `matricula_maestrofk`
-    FOREIGN KEY (`MaestroID`)
-    REFERENCES `Maestro` (`Id`),
+  CONSTRAINT `matricula_personafk`
+    FOREIGN KEY (`PersonaID`)
+    REFERENCES `Persona` (`Id`),
   CONSTRAINT `matricula_cursofk`
     FOREIGN KEY (`CursoID`)
     REFERENCES `Curso` (`Id`)
@@ -115,22 +88,22 @@ DEFAULT CHARACTER SET = utf8;
 
 CREATE Table if NOT EXISTS `Permiso` (
   `Id` INT AUTO_INCREMENT PRIMARY KEY,
-  `Modulo` VARCHAR(250) NOT NULL,
+  `Tipo` VARCHAR(45) NOT NULL,
   `Nombre` VARCHAR(250) NOT NULL,
   `Descripcion` VARCHAR(250)
 )
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
 
-CREATE Table if NOT EXISTS `Acceso` (
+CREATE Table if NOT EXISTS `Modulo` (
   `Id` INT AUTO_INCREMENT PRIMARY KEY,
-  `Tipo` VARCHAR(45) NOT NULL,
+  `Nombre` VARCHAR(250) NOT NULL,
   `RolID` INT NOT NULL,
   `PermisoID` INT NOT NULL,
-  CONSTRAINT `acceso_rolfk`
+  CONSTRAINT `modulo_rolfk`
     FOREIGN KEY (`RolID`)
     REFERENCES `Rol` (`Id`),
-  CONSTRAINT `acceso_permisofk`
+  CONSTRAINT `modulo_permisofk`
     FOREIGN KEY (`PermisoID`)
     REFERENCES `Permiso` (`Id`)
 )
@@ -138,7 +111,7 @@ ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8;
 
 CREATE Table if NOT EXISTS `Usuario` (
-  `Id` INT AUTO_INCREMENT PRIMARY KEY,
+  `Id` INT PRIMARY KEY,
   `login` VARCHAR(45) NOT NULL,
   `password` VARCHAR(45) NOT NULL,
   `RolID` INT NOT NULL,
